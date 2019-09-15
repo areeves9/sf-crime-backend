@@ -1,0 +1,5 @@
+*.pyc
+.env
+.flaskenv
+.vscode
+/instance
