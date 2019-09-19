@@ -42,6 +42,5 @@ def vehicle_incidents(longitude, latitude, radius):
     if request.method == 'GET':
         return get_thirty_days_vehicle_incidents(longitude, latitude, radius)
 
-
 if __name__ == '__main__':
     app.run()
