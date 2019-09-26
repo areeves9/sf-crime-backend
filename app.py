@@ -3,6 +3,7 @@ from sqlalchemy import cast
 from geoalchemy2 import Geography
 import geoalchemy2.functions as geoalchemy2
 from flask import Flask, request, jsonify
+from flask_cors import cross_origin
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
@@ -27,9 +28,10 @@ def get_timedelta():
 
 
 def get_thirty_days_vehicle_incidents(lng, lat, radius, page, per_page):
-    filtered_incidents = (Incident.query.filter(
-        Incident.incident_datetime.between(
-            get_timedelta(), datetime.date.today())
+    filtered_incidents = (
+        Incident.query.filter(
+            Incident.incident_datetime.between(
+                get_timedelta(), datetime.date.today())
         ).filter(
             geoalchemy2.ST_DWithin(
                 Incident.point, (
@@ -38,32 +40,60 @@ def get_thirty_days_vehicle_incidents(lng, lat, radius, page, per_page):
                         )
                     ), radius
                 ), Incident.incident_subcategory.like('%Vehicle%')))
-    
-    vehicle_incidents = filtered_incidents.paginate(page, per_page, False).items
+
+    vehicle_incidents = filtered_incidents.paginate(
+        page,
+        per_page,
+        False
+        ).items
+
     pages = filtered_incidents.paginate(page, per_page, False).pages
-    
+
     return jsonify(
         meta={
             "total_incidents": filtered_incidents.count(),
-            "current_page": request.args.get('page', type=int),
-            "per_page": request.args.get('limit', type=int),
+            "current_page": request.args.get(
+                'page',
+                default=1,
+                type=int
+                ),
+            "per_page": request.args.get(
+                'limit',
+                default=20,
+                type=int
+                ),
             "pages": pages,
         },
         vehicle_incidents=[incident.serialize for incident in vehicle_incidents],
         )
 
 
-# get vehicle related incidents for previous 30 days
+# send get request to dynamic url: 127.0.0.1:5000/vehicles/lat/<latitude>/lng/<longitude>
 @app.route(
-    # use werkzeug bulit-in float converter (signed=True)
-    '/vehicles/<float(signed=True):longitude>/<float(signed=True):latitude>/<int:radius>',
+    # signed=True allows negative floats
+    '/vehicles/lat/<float(signed=True):latitude>/lng/<float(signed=True):longitude>/<int:radius>/',
     methods=['GET']
     )
+@cross_origin()
 def vehicle_incidents(longitude, latitude, radius):
     if request.method == 'GET':
-        page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('limit', 10, type=int)
-        return get_thirty_days_vehicle_incidents(longitude, latitude, radius, page, per_page)
+        page = request.args.get(
+            'page',
+            default=1,
+            type=int
+            )
+        per_page = request.args.get(
+            'limit',
+            default=20,
+            type=int
+            )
+        return get_thirty_days_vehicle_incidents(
+            longitude,
+            latitude,
+            radius,
+            page,
+            per_page
+        )
 
 
 if __name__ == '__main__':
