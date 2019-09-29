@@ -95,6 +95,5 @@ def vehicle_incidents(longitude, latitude, radius):
             per_page
         )
 
-
 if __name__ == '__main__':
     app.run()
