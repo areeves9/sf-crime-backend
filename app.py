@@ -1,4 +1,6 @@
 import datetime
+import os
+from dotenv import load_dotenv
 from sqlalchemy import cast
 from geoalchemy2 import Geography
 import geoalchemy2.functions as geoalchemy2
@@ -7,15 +9,35 @@ from flask_cors import cross_origin
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
-
+# instantiate the flask application
 app = Flask(
     __name__,
-    instance_relative_config=True,
     template_folder="templates"
     )
-# secret environment variables
-app.config.from_pyfile('config.py')
 
+# configuration with environmetnal variables from python-dotenv
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) # This is your Project Root
+ENV_DIR = os.path.join(ROOT_DIR, '.env')
+load_dotenv(ENV_DIR)
+
+# set config variables based on flask environment setting
+if app.confing['ENV'] == 'development':
+    app.config.update(
+            SECRET_KEY=os.getenv('SECRET_KEY'),
+            SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI'),
+            SQLALCHEMY_TRACK_MODIFICATIONS=os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS'),
+        )
+elif app.config['ENV'] == 'production':
+    app.config.update(
+            SECRET_KEY=os.getenv('SECRET_KEY'),
+            SQLALCHEMY_DATABASE_URI=os.getenv('DATABASE_URL'),
+            SQLALCHEMY_TRACK_MODIFICATIONS=os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS'),
+        )
+else:
+    print("Errorsss...")
+
+
+# create db instance with sqlalchemy
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
