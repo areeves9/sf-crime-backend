@@ -21,7 +21,7 @@ ENV_DIR = os.path.join(ROOT_DIR, '.env')
 load_dotenv(ENV_DIR)
 
 # set config variables based on flask environment setting
-if app.confing['ENV'] == 'development':
+if app.config['ENV'] == 'development':
     app.config.update(
             SECRET_KEY=os.getenv('SECRET_KEY'),
             SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI'),
