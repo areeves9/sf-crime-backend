@@ -1,5 +1,7 @@
 import datetime
 import os
+import sys
+import logging
 from dotenv import load_dotenv
 from sqlalchemy import cast
 from geoalchemy2 import Geography
@@ -14,6 +16,9 @@ app = Flask(
     __name__,
     template_folder="templates"
     )
+
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.WARNING)
 
 # configuration with environmetnal variables from python-dotenv
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__)) # This is your Project Root
