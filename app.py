@@ -49,11 +49,13 @@ migrate = Migrate(app, db)
 from models import Incident
 
 
+# get datetime object that is 30 days prior to current date
 def get_timedelta():
     d = datetime.date.today() - datetime.timedelta(days=100)
     return d
 
 
+# get from db incidents a certain distance from the lat and lng
 def get_thirty_days_vehicle_incidents(lng, lat, radius, page, per_page):
     filtered_incidents = (
         Incident.query.filter(
