@@ -34,6 +34,7 @@ def create_incident_instance(row):
         longitude=row['Longitude'],
         point=row['point'],
         )
+    print("...adding Incident #%s, Row ID: %s" % (i.incident_id, i.row_id))    
     db.session.add(i)
     print("...adding Incident #%s, Row ID: %s" % (i.incident_id, i.row_id))
 
@@ -45,7 +46,7 @@ def seed_db():
         with open('sf_crime_2018.csv') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                if not row['point']:
+                if not row['point'] and not row['Intersection']:
                     pass
                 else:
                     create_incident_instance(row)
