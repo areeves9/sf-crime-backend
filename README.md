@@ -19,3 +19,4 @@ SF Open Crime Data project. This also populates the db.
 
 Must be in flask shell otherwise conda env vars won't be recognized.
 
+Push local db to remote db on heroku.
