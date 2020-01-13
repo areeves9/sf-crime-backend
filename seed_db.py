@@ -3,7 +3,6 @@ from sqlalchemy.exc import SQLAlchemyError as e
 from app import db
 from models import Incident
 
-
 # creates a model instance for the db table Incident
 def create_incident_instance(row):
     i = Incident(

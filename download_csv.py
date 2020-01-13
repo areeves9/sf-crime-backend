@@ -24,3 +24,6 @@ def download_csv():
         return seed_db.seed_db()
     except HTTPError as e:
         return print(f'HTTP error has occured: {e}')
+
+
+download_csv()
